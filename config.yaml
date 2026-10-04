@@ -1,0 +1,26 @@
+server:
+  address: ":8080"
+  read_timeout: 15s
+  write_timeout: 30s
+  shutdown_timeout: 10s
+
+database:
+  dsn: "imageguard.db?_busy_timeout=5000&_journal_mode=WAL"
+
+storage:
+  directory: "./data/images"
+  max_image_bytes: 10485760
+
+policy:
+  path: "policy.txt"
+
+moderation:
+  endpoint: "http://127.0.0.1:8081/v1/chat/completions"
+  model: "shieldgemma-2-4b-it"
+  timeout: 2m
+
+worker:
+  poll_interval: 2s
+
+logging:
+  level: "info"
