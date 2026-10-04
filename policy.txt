@@ -1,5 +1,35 @@
-No sexually explicit content: the image must not depict explicit or graphic sexual acts, including pornography, erotic nudity, rape, or sexual assault.
+No Sexual Content:
+The image shall not contain nudity, sexualized content, explicit sexual acts, pornography, erotic content, sexual assault, or sexual content involving minors.
 
-No dangerous content: the image must not promote or instruct self-harm, harm to others, terrorism, or the construction or use of weapons or explosives.
+No Weapons:
+The image shall not contain visible weapons or weapon-like objects, including firearms, ammunition, knives, swords, explosives, bombs, grenades, or improvised weapons.
 
-No graphic violence: the image must not depict graphic violence, severe injury, or gore.
+No Blood:
+The image shall not contain visible blood, blood-like substances, bleeding, bloody objects, or blood stains.
+
+No Violence or Gore:
+The image shall not contain violence, physical assault, severe injury, wounds, mutilation, exposed tissue, organs, severed body parts, corpses, death, or gore.
+
+No Self-Harm:
+The image shall not contain suicide, attempted suicide, self-injury, self-harm, or objects being used for self-harm.
+
+No Dangerous Content:
+The image shall not contain dangerous activities, terrorism, explosives, dangerous weapon use, hazardous substances, or activities likely to cause serious physical harm.
+
+No Drugs:
+The image shall not contain illegal drugs, drug use, drug preparation, drug production, drug trafficking, or drug paraphernalia.
+
+No Child Exploitation:
+The image shall not contain child abuse, child exploitation, child endangerment, sexualized minors, or minors in abusive or inappropriate situations.
+
+No Hate or Extremism:
+The image shall not contain hateful symbols, extremist symbols, extremist propaganda, terrorist propaganda, or content promoting hatred or violent extremism.
+
+No Disturbing Medical Content:
+The image shall not contain surgery, severe medical trauma, exposed wounds, medical emergencies, bodily fluids, or disturbing medical imagery.
+
+No Animal Cruelty:
+The image shall not contain animal abuse, animal torture, severe animal injury, animal mutilation, or animal death.
+
+No Sensitive Personal Information:
+The image shall not expose passwords, authentication codes, API keys, access tokens, private keys, payment information, government identification, medical records, home addresses, phone numbers, email addresses, or other sensitive personal information.

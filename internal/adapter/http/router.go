@@ -12,6 +12,7 @@ func NewRouter(images port.ImageApplication, maxImageBytes int64, logger *zap.Lo
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery(), requestLogger(logger))
+	router.StaticFile("/", "tools/web.html")
 	router.GET("/health/live", func(c *gin.Context) { c.JSON(200, gin.H{"status": "ok"}) })
 	router.GET("/health/ready", func(c *gin.Context) { c.JSON(200, gin.H{"status": "ready"}) })
 	handler := NewHandler(images, maxImageBytes, logger)

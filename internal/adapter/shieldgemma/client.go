@@ -13,6 +13,7 @@ import (
 
 	"github.com/barluscuda/golang-image-guard-shieldgemma-2/internal/domain"
 	"github.com/barluscuda/golang-image-guard-shieldgemma-2/internal/port"
+	"go.uber.org/zap"
 )
 
 type Client struct {
@@ -20,10 +21,11 @@ type Client struct {
 	model    string
 	http     *http.Client
 	maxBytes int64
+	logger   *zap.Logger
 }
 
-func New(endpoint, model string, timeout time.Duration, maxBytes int64) *Client {
-	return &Client{endpoint: endpoint, model: model, maxBytes: maxBytes, http: &http.Client{Timeout: timeout}}
+func New(endpoint, model string, timeout time.Duration, maxBytes int64, logger *zap.Logger) *Client {
+	return &Client{endpoint: endpoint, model: model, maxBytes: maxBytes, http: &http.Client{Timeout: timeout}, logger: logger}
 }
 
 var _ port.ImageModerator = (*Client)(nil)
@@ -76,11 +78,15 @@ func (c *Client) Moderate(ctx context.Context, imageReader io.Reader, contentTyp
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	c.logger.Debug("model prompt", zap.String("model", c.model), zap.String("prompt", prompt), zap.String("content_type", contentType), zap.Int("image_bytes", len(imageBytes)))
+	c.logger.Info("calling moderation model", zap.String("model", c.model))
+	started := time.Now()
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("call llama.cpp: %w", err)
 	}
 	defer resp.Body.Close()
+	c.logger.Info("moderation model responded", zap.String("model", c.model), zap.Int("status", resp.StatusCode), zap.Duration("duration", time.Since(started)))
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return nil, fmt.Errorf("llama.cpp returned status %d", resp.StatusCode)
 	}
@@ -91,6 +97,7 @@ func (c *Client) Moderate(ctx context.Context, imageReader io.Reader, contentTyp
 	if len(decoded.Choices) == 0 {
 		return nil, domain.ErrInvalidDecision
 	}
+	c.logger.Debug("model output", zap.String("model", c.model), zap.String("output", decoded.Choices[0].Message.Content))
 	answer := strings.TrimSpace(decoded.Choices[0].Message.Content)
 	words := strings.Fields(answer)
 	if len(words) == 0 {

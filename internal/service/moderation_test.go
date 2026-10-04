@@ -15,6 +15,7 @@ import (
 	gormadapter "github.com/barluscuda/golang-image-guard-shieldgemma-2/internal/adapter/gorm"
 	"github.com/barluscuda/golang-image-guard-shieldgemma-2/internal/adapter/storage"
 	"github.com/barluscuda/golang-image-guard-shieldgemma-2/internal/domain"
+	"github.com/barluscuda/golang-image-guard-shieldgemma-2/internal/port"
 	"github.com/barluscuda/golang-image-guard-shieldgemma-2/internal/repository"
 	"go.uber.org/zap"
 )
@@ -28,7 +29,27 @@ func (allowModerator) Moderate(_ context.Context, _ io.Reader, _, policy string)
 	return &domain.ModerationResult{Verdict: domain.VerdictAllowed, Model: "test-model"}, nil
 }
 
+type failedModerator struct{ calls int }
+
+func (m *failedModerator) Moderate(context.Context, io.Reader, string, string) (*domain.ModerationResult, error) {
+	m.calls++
+	return nil, errors.New("model unavailable")
+}
+
 func TestUploadModeratePersistAndDelete(t *testing.T) {
+	testUploadModeratePersistAndDelete(t, allowModerator{}, "")
+}
+
+func TestModelFailureDoesNotApprove(t *testing.T) {
+	moderator := &failedModerator{}
+	testUploadModeratePersistAndDelete(t, moderator, "moderation_failed")
+	if moderator.calls != 1 {
+		t.Fatalf("model calls = %d, want 1", moderator.calls)
+	}
+}
+
+func testUploadModeratePersistAndDelete(t *testing.T, moderator port.ImageModerator, wantError string) {
+	t.Helper()
 	ctx := context.Background()
 	root := t.TempDir()
 	db, err := gormadapter.Initialize(filepath.Join(root, "test.db")+"?_busy_timeout=5000", &repository.ImageModel{})
@@ -65,7 +86,7 @@ func TestUploadModeratePersistAndDelete(t *testing.T) {
 		t.Fatalf("uploaded file was not stored: %v", err)
 	}
 
-	moderation := NewModerationService(repo, files, allowModerator{}, zap.NewNop())
+	moderation := NewModerationService(repo, files, moderator, zap.NewNop())
 	worked, err := moderation.ProcessNext(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -80,8 +101,12 @@ func TestUploadModeratePersistAndDelete(t *testing.T) {
 	if processed.Status != domain.StatusProcessed {
 		t.Fatalf("status = %q, want processed", processed.Status)
 	}
-	if processed.Result == nil || processed.Result.Verdict != domain.VerdictAllowed {
-		t.Fatalf("unexpected moderation result: %#v", processed.Result)
+	if wantError != "" {
+		if processed.Result != nil || processed.ProcessingError != wantError {
+			t.Fatalf("failed model call produced result %#v, error %q", processed.Result, processed.ProcessingError)
+		}
+	} else if processed.Result == nil || processed.Result.Verdict != domain.VerdictAllowed || processed.ProcessingError != "" {
+		t.Fatalf("unexpected moderation result: %#v, error %q", processed.Result, processed.ProcessingError)
 	}
 	if processed.DeletedAt == nil {
 		t.Fatal("database does not record image deletion")

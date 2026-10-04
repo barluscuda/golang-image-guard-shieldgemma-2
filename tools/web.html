@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f8">
+  <title>Image Guard — Moderation workspace</title>
+  <script>
+    tailwind = { config: { theme: { extend: { colors: {
+      ink: '#20242d', muted: '#737986', line: '#e8eaf0', canvas: '#f5f6f8', lime: '#c7f36b',
+      navy: '#1d2638', violet: '#7569ef'
+    } } } } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .noise { background-image: radial-gradient(#d9dce4 .7px, transparent .7px); background-size: 12px 12px; }
+    .drop-active { border-color: #7569ef !important; background: #f5f3ff !important; }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #d8dbe3; border-radius: 99px; }
+    @keyframes pulse-soft { 50% { opacity: .45; } }
+    .pulse-soft { animation: pulse-soft 1.5s ease-in-out infinite; }
+  </style>
+</head>
+<body class="min-h-screen bg-canvas text-ink antialiased">
+  <div class="min-h-screen md:flex">
+    <aside class="hidden w-[248px] shrink-0 flex-col border-r border-line bg-white md:flex">
+      <div class="flex h-[76px] items-center gap-3 border-b border-line px-6">
+        <div class="grid h-9 w-9 place-items-center rounded-xl bg-navy text-lime shadow-sm">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.2 19 6v5.2c0 4.4-2.9 7.8-7 9.6-4.1-1.8-7-5.2-7-9.6V6l7-2.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m8.8 12.1 2.1 2.1 4.4-4.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div><div class="text-[15px] font-semibold tracking-tight">Image Guard</div><div class="text-[10px] font-semibold uppercase tracking-[.18em] text-muted">Safety console</div></div>
+      </div>
+
+      <div class="px-4 pt-7">
+        <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#a0a4af]">Workspace</div>
+        <a href="#workspace" class="flex items-center gap-3 rounded-xl bg-[#f1f0ff] px-3 py-2.5 text-sm font-semibold text-violet">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.7" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.7" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.7" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.7" stroke="currentColor" stroke-width="1.7"/></svg>
+          Review workspace
+        </a>
+      </div>
+
+      <div class="mt-auto p-4">
+        <div class="rounded-2xl border border-[#e9eaf0] bg-[#fafafd] p-4">
+          <div class="mb-3 flex items-center gap-2">
+            <span id="side-health-dot" class="h-2 w-2 rounded-full bg-[#b9bdc7]"></span>
+            <span id="side-health-label" class="text-xs font-semibold text-muted">Checking service…</span>
+          </div>
+          <div class="text-xs font-semibold">Local moderation</div>
+          <p class="mt-1.5 text-[11px] leading-5 text-muted">Images are checked by the configured ShieldGemma model. Source files are removed after processing.</p>
+          <button id="settings-toggle" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-violet hover:text-[#5c50d7]">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3 .9v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.8 1.8 0 0 0-3-.9l-.1.1a1.8 1.8 0 0 1-2.5-2.5l.1-.1a1.8 1.8 0 0 0-.9-3h-.2a1.8 1.8 0 0 1 0-3.6h.2a1.8 1.8 0 0 0 .9-3l-.1-.1a1.8 1.8 0 0 1 2.5-2.5l.1.1a1.8 1.8 0 0 0 3-.9v-.2a1.8 1.8 0 0 1 3.6 0v.2a1.8 1.8 0 0 0 3 .9l.1-.1a1.8 1.8 0 0 1 2.5 2.5l-.1.1a1.8 1.8 0 0 0 .9 3h.2a1.8 1.8 0 0 1 0 3.6h-.2a1.8 1.8 0 0 0-.9 3Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+            API connection
+          </button>
+        </div>
+        <div class="mt-4 flex items-center gap-2 px-1 text-[10px] text-[#a0a4af]"><span class="h-1.5 w-1.5 rounded-full bg-lime-500"></span> ShieldGemma · local service</div>
+      </div>
+    </aside>
+
+    <main id="workspace" class="min-w-0 flex-1">
+      <header class="sticky top-0 z-20 flex h-[68px] items-center justify-between border-b border-line bg-white/90 px-5 backdrop-blur md:px-10">
+        <div class="flex items-center gap-3">
+          <div class="grid h-9 w-9 place-items-center rounded-xl bg-navy text-lime md:hidden">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.2 19 6v5.2c0 4.4-2.9 7.8-7 9.6-4.1-1.8-7-5.2-7-9.6V6l7-2.8Z" stroke="currentColor" stroke-width="1.8"/><path d="m8.8 12.1 2.1 2.1 4.4-4.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="text-xs text-muted">Workspace <span class="mx-1.5 text-[#c9cbd2]">/</span><span class="font-semibold text-ink">Image review</span></div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div id="health-badge" class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-[11px] font-semibold text-muted">
+            <span id="health-dot" class="h-1.5 w-1.5 rounded-full bg-[#b9bdc7]"></span><span id="health-label">Connecting</span>
+          </div>
+          <div class="hidden h-8 w-px bg-line sm:block"></div>
+          <div class="hidden items-center gap-2 sm:flex"><div class="grid h-8 w-8 place-items-center rounded-full bg-[#e9e7ff] text-[11px] font-bold text-violet">IG</div><span class="text-xs font-semibold">Local session</span></div>
+        </div>
+      </header>
+
+      <div class="mx-auto max-w-[1440px] px-5 py-7 md:px-10 md:py-9">
+        <section class="mb-7 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-[#e9e5ff] bg-[#f5f3ff] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.13em] text-violet"><span class="h-1.5 w-1.5 rounded-full bg-violet"></span> Moderation desk</div>
+            <h1 class="text-[28px] font-semibold tracking-[-.04em] text-ink md:text-[34px]">Review workspace</h1>
+            <p class="mt-1.5 text-sm text-muted">Queue images for a policy check, then follow each result as it arrives.</p>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] text-muted"><span class="grid h-7 w-7 place-items-center rounded-lg bg-white text-violet shadow-sm ring-1 ring-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v4l2.7 1.7M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span>Results tracked in this browser</span></div>
+        </section>
+
+        <section class="mb-6 grid gap-3 sm:grid-cols-3">
+          <div class="rounded-2xl border border-line bg-white p-4 shadow-[0_2px_10px_rgba(31,38,56,.025)]">
+            <div class="flex items-start justify-between"><span class="text-xs font-medium text-muted">Tracked images</span><span class="grid h-8 w-8 place-items-center rounded-xl bg-[#f1f0ff] text-violet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.7"/><circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="m5 17 4.5-4 3 2.5 3.5-4 3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div id="stat-total" class="mt-3 text-[26px] font-semibold tracking-tight">0</div><div class="mt-1 text-[11px] text-muted">Saved in this browser</div>
+          </div>
+          <div class="rounded-2xl border border-line bg-white p-4 shadow-[0_2px_10px_rgba(31,38,56,.025)]">
+            <div class="flex items-start justify-between"><span class="text-xs font-medium text-muted">Allowed</span><span class="grid h-8 w-8 place-items-center rounded-xl bg-[#eff9e4] text-[#679b2b]"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12.5 4.3 4.2L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div id="stat-allowed" class="mt-3 text-[26px] font-semibold tracking-tight">0</div><div class="mt-1 text-[11px] text-muted">Processed with an allowed verdict</div>
+          </div>
+          <div class="rounded-2xl border border-line bg-white p-4 shadow-[0_2px_10px_rgba(31,38,56,.025)]">
+            <div class="flex items-start justify-between"><span class="text-xs font-medium text-muted">Blocked</span><span class="grid h-8 w-8 place-items-center rounded-xl bg-[#fff0ef] text-[#d85c50]"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="m9 9 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></div>
+            <div id="stat-blocked" class="mt-3 text-[26px] font-semibold tracking-tight">0</div><div class="mt-1 text-[11px] text-muted">Processed with a blocked verdict</div>
+          </div>
+        </section>
+
+        <section class="mb-6 overflow-hidden rounded-2xl border border-line bg-white shadow-[0_2px_12px_rgba(31,38,56,.035)]">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4 md:px-6">
+            <div><h2 class="text-sm font-semibold">Add images</h2><p class="mt-1 text-[11px] text-muted">Choose one or more files to submit to the moderation queue.</p></div>
+            <div class="inline-flex items-center gap-1.5 rounded-full bg-[#f7f8fa] px-2.5 py-1.5 text-[10px] font-semibold text-muted"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.5 19 6v5.2c0 4.4-2.8 7.8-7 9.3-4.2-1.5-7-4.9-7-9.3V6l7-2.5Z" stroke="currentColor" stroke-width="1.6"/><path d="M8 12h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> JPEG or PNG</div>
+          </div>
+          <div class="p-5 md:p-6">
+            <div id="drop-zone" class="noise flex min-h-[174px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#d9dce5] bg-[#fafbfc] px-5 py-7 text-center transition hover:border-violet/50 hover:bg-[#fbfaff]">
+              <input id="file-input" class="hidden" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple>
+              <div class="mb-3 grid h-11 w-11 place-items-center rounded-2xl bg-white text-violet shadow-sm ring-1 ring-[#eceaf8]">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="text-sm font-semibold">Drop images here or <span class="text-violet">browse files</span></div>
+              <div class="mt-1.5 text-[11px] text-muted">Select JPEG or PNG images. Each file is submitted separately.</div>
+            </div>
+            <div id="selection-area" class="mt-4 hidden">
+              <div class="mb-2 flex items-center justify-between"><div id="selection-count" class="text-xs font-semibold"></div><button id="clear-selection" class="text-[11px] font-medium text-muted hover:text-ink">Clear selection</button></div>
+              <div id="selected-files" class="scrollbar-thin flex max-h-28 flex-wrap gap-2 overflow-y-auto"></div>
+            </div>
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2 text-[10px] text-muted"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.5 19 6v5.2c0 4.4-2.8 7.8-7 9.3-4.2-1.5-7-4.9-7-9.3V6l7-2.5Z" stroke="currentColor" stroke-width="1.6"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Uploaded source files are deleted after processing.</div>
+              <button id="submit-button" disabled class="inline-flex items-center gap-2 rounded-xl bg-navy px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#2c3850] disabled:cursor-not-allowed disabled:bg-[#a7acb8] disabled:shadow-none"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Start moderation</span></button>
+            </div>
+            <div id="upload-message" class="mt-3 hidden rounded-xl px-3 py-2 text-xs"></div>
+          </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl border border-line bg-white shadow-[0_2px_12px_rgba(31,38,56,.035)]">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4 md:px-6">
+            <div><div class="flex items-center gap-2"><h2 class="text-sm font-semibold">Review queue</h2><span id="queue-count" class="rounded-full bg-[#f2f3f6] px-2 py-0.5 text-[10px] font-semibold text-muted">0</span></div><p class="mt-1 text-[11px] text-muted">Status and verdicts for image IDs submitted from this browser.</p></div>
+            <label class="relative"><span class="sr-only">Search tracked images</span><svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#969ba7]" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input id="search-input" type="search" placeholder="Find an image…" class="h-9 w-[190px] rounded-xl border border-line bg-white pl-9 pr-3 text-xs outline-none placeholder:text-[#a6aab4] focus:border-violet/50 focus:ring-2 focus:ring-violet/10"></label>
+          </div>
+          <div class="hidden grid-cols-[minmax(220px,1.6fr)_minmax(115px,.7fr)_minmax(120px,.8fr)_minmax(135px,.9fr)] gap-3 border-b border-line bg-[#fafbfc] px-6 py-2.5 text-[9px] font-bold uppercase tracking-[.14em] text-[#999eaa] md:grid"><div>Image</div><div>Submitted</div><div>Processing status</div><div class="text-right">Decision</div></div>
+          <div id="queue-list"></div>
+          <div id="empty-state" class="px-6 py-12 text-center">
+            <div class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#f4f3ff] text-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="m5 17 4.5-4 3 2.5 3.5-4 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="mt-3 text-sm font-semibold">Your review queue is clear</div><p class="mx-auto mt-1 max-w-sm text-xs leading-5 text-muted">Add an image above to send it to Image Guard. Submitted image IDs and results will show up here.</p>
+          </div>
+          <div id="no-results" class="hidden px-6 py-10 text-center text-xs text-muted">No tracked images match that search.</div>
+          <div class="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-[#fcfcfd] px-5 py-3 text-[10px] text-muted md:px-6"><span id="queue-footer">Tracking 0 image IDs in this browser</span><span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-[#a5d85c]"></span> API-backed status updates</span></div>
+        </section>
+
+        <div id="settings-panel" class="mt-5 hidden rounded-2xl border border-line bg-white p-5 shadow-sm md:p-6">
+          <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="text-sm font-semibold">API connection</h2><p class="mt-1 text-xs text-muted">Set the base URL for the Image Guard service. The page uses its health and image endpoints.</p></div><button id="settings-close" class="rounded-lg p-1 text-muted hover:bg-[#f4f5f7]" aria-label="Close settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button></div>
+          <div class="mt-4 flex flex-col gap-2 sm:flex-row"><label class="sr-only" for="api-base">API base URL</label><input id="api-base" type="url" placeholder="http://localhost:8080" class="h-10 min-w-0 flex-1 rounded-xl border border-line px-3 text-sm outline-none focus:border-violet/50 focus:ring-2 focus:ring-violet/10"><button id="save-api" class="h-10 rounded-xl bg-navy px-4 text-xs font-semibold text-white hover:bg-[#2c3850]">Save and reconnect</button></div>
+          <p class="mt-2 text-[10px] text-muted">When opened from the Go service, this uses the current origin by default.</p>
+        </div>
+        <footer class="pb-5 pt-6 text-center text-[10px] text-[#a4a8b2]">Image Guard · ShieldGemma moderation · Session history is stored in this browser</footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'image-guard-browser-jobs-v1';
+      const API_KEY = 'image-guard-api-base-v1';
+      const byId = (id) => document.getElementById(id);
+      const fileInput = byId('file-input');
+      const dropZone = byId('drop-zone');
+      const submitButton = byId('submit-button');
+      const selectedFilesEl = byId('selected-files');
+      let selectedFiles = [];
+      let submitting = false;
+      let records = loadRecords();
+      const previews = new Map();
+      const watching = new Map();
+      let apiBase = loadApiBase();
+
+      function loadRecords() {
+        try {
+          const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+          return Array.isArray(value) ? value.filter((item) => item && item.clientId && item.fileName).map((item) => {
+            // Stored verdicts must be verified by the API in this session.
+            if (item.imageId) resetResult(item);
+            return item;
+          }) : [];
+        } catch (_) { return []; }
+      }
+      function loadApiBase() {
+        try {
+          const saved = localStorage.getItem(API_KEY);
+          if (saved) return saved;
+        } catch (_) {}
+        return window.location.protocol === 'file:' ? 'http://localhost:8080' : window.location.origin;
+      }
+      function saveRecords() {
+        records = records.slice(0, 100);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch (_) {}
+      }
+      function endpoint(path) { return apiBase.replace(/\/+$/, '') + path; }
+      function resetResult(record) {
+        record.status = 'checking';
+        delete record.outcome;
+        delete record.moderationResult;
+        delete record.processedAt;
+        record.error = '';
+      }
+      function reconnectRecords() {
+        watching.clear();
+        records.filter((item) => item.imageId).forEach((item) => {
+          resetResult(item);
+          watchRecord(item);
+        });
+        saveRecords(); render();
+      }
+      function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      }
+      function formatBytes(bytes) {
+        if (!Number.isFinite(Number(bytes)) || Number(bytes) < 0) return '';
+        const n = Number(bytes);
+        return n < 1024 * 1024 ? (n / 1024).toFixed(0) + ' KB' : (n / (1024 * 1024)).toFixed(1) + ' MB';
+      }
+      function formatDate(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '—';
+        return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(date);
+      }
+      function notify(message, tone) {
+        const box = byId('upload-message');
+        box.textContent = message;
+        box.className = 'mt-3 rounded-xl px-3 py-2 text-xs ' + (tone === 'error' ? 'bg-[#fff0ef] text-[#b6493f]' : 'bg-[#f1f8e8] text-[#527c27]');
+      }
+      function getStatusMeta(record) {
+        if (record.status === 'uploading') return ['Uploading', 'bg-[#f4f3ff] text-violet', true];
+        if (record.status === 'queued') return ['Queued', 'bg-[#fff7e7] text-[#a87017]', true];
+        if (record.status === 'processing') return ['Processing', 'bg-[#eff5ff] text-[#4874be]', true];
+        if (record.status === 'processed') return ['Processed', 'bg-[#eef7e5] text-[#5c8a2c]', false];
+        if (record.status === 'failed') return ['Upload failed', 'bg-[#fff0ef] text-[#b6493f]', false];
+        if (record.status === 'unavailable') return ['Service unavailable', 'bg-[#fff7e7] text-[#a87017]', false];
+        return ['Checking status', 'bg-[#f2f3f6] text-muted', true];
+      }
+      function hasSuccessfulResult(record) {
+        return record.status === 'processed' && record.outcome === 'success' && !record.error && !!record.moderationResult;
+      }
+      function getVerdict(record) {
+        if (record.status === 'failed') return { label: record.error || 'Upload failed', style: 'text-[#b6493f]', sub: '' };
+        if (record.status === 'unavailable') return { label: 'Reconnect to retry', style: 'text-[#a87017]', sub: record.error || '' };
+        if (record.status !== 'processed') return { label: 'Waiting for result', style: 'text-muted', sub: '' };
+        if (!hasSuccessfulResult(record)) return { label: 'Could not process', style: 'text-[#b6493f]', sub: record.error || 'Processing error' };
+        const verdict = String(record.moderationResult.verdict || '').toLowerCase();
+        if (verdict === 'allowed') return { label: 'Allowed', style: 'text-[#5c8a2c]', sub: record.moderationResult.model || '' };
+        if (verdict === 'blocked') return { label: 'Blocked', style: 'text-[#b6493f]', sub: record.moderationResult.model || '' };
+        return { label: verdict || 'Processed', style: 'text-ink', sub: record.moderationResult.model || '' };
+      }
+      function render() {
+        const list = byId('queue-list');
+        const query = byId('search-input').value.trim().toLowerCase();
+        const sorted = records.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const filtered = sorted.filter((item) => (item.fileName + ' ' + (item.imageId || '') + ' ' + (item.status || '')).toLowerCase().includes(query));
+        byId('stat-total').textContent = records.length;
+        byId('stat-allowed').textContent = records.filter((item) => hasSuccessfulResult(item) && item.moderationResult.verdict === 'allowed').length;
+        byId('stat-blocked').textContent = records.filter((item) => hasSuccessfulResult(item) && item.moderationResult.verdict === 'blocked').length;
+        byId('queue-count').textContent = records.length;
+        byId('queue-footer').textContent = 'Tracking ' + records.length + ' image ' + (records.length === 1 ? 'ID' : 'IDs') + ' in this browser';
+        byId('empty-state').classList.toggle('hidden', records.length !== 0);
+        byId('no-results').classList.toggle('hidden', records.length === 0 || filtered.length !== 0);
+        list.innerHTML = filtered.map((record) => {
+          const meta = getStatusMeta(record);
+          const verdict = getVerdict(record);
+          const imageSrc = previews.get(record.clientId);
+          const thumb = imageSrc
+            ? '<img src="' + escapeHtml(imageSrc) + '" alt="" class="h-full w-full object-cover">'
+            : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="m5 17 4.5-4 3 2.5 3.5-4 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          const pulse = meta[2] ? '<span class="h-1.5 w-1.5 rounded-full bg-current pulse-soft"></span>' : '';
+          const idLine = record.imageId ? '<span class="font-mono text-[9px] text-[#a0a4af]">ID ' + escapeHtml(record.imageId.slice(0, 12)) + '</span>' : '<span class="text-[9px] text-[#a0a4af]">Awaiting image ID</span>';
+          return '<article class="grid gap-3 border-b border-line px-4 py-3.5 last:border-b-0 md:grid-cols-[minmax(220px,1.6fr)_minmax(115px,.7fr)_minmax(120px,.8fr)_minmax(135px,.9fr)] md:items-center md:px-6">' +
+            '<div class="flex min-w-0 items-center gap-3"><div class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#f4f5f7] text-[#9298a4]">' + thumb + '</div><div class="min-w-0"><div class="truncate text-xs font-semibold">' + escapeHtml(record.fileName) + '</div><div class="mt-1 flex items-center gap-2">' + idLine + (record.sizeBytes ? '<span class="text-[9px] text-[#c0c3cb]">·</span><span class="text-[9px] text-[#a0a4af]">' + formatBytes(record.sizeBytes) + '</span>' : '') + '</div></div></div>' +
+            '<div class="pl-[56px] text-[11px] text-muted md:pl-0"><span class="mr-2 text-[9px] font-bold uppercase tracking-wider text-[#b0b4bd] md:hidden">Added</span>' + formatDate(record.createdAt) + '</div>' +
+            '<div class="pl-[56px] md:pl-0"><span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold ' + meta[1] + '">' + pulse + escapeHtml(meta[0]) + '</span></div>' +
+            '<div class="pl-[56px] md:pl-0 md:text-right"><div class="text-xs font-semibold ' + verdict.style + '">' + escapeHtml(verdict.label) + '</div>' + (verdict.sub ? '<div class="mt-1 truncate text-[9px] text-[#a0a4af] md:ml-auto md:max-w-[160px]">' + escapeHtml(verdict.sub) + '</div>' : '') + '</div>' +
+          '</article>';
+        }).join('');
+      }
+      function renderSelection() {
+        const area = byId('selection-area');
+        area.classList.toggle('hidden', selectedFiles.length === 0);
+        byId('selection-count').textContent = selectedFiles.length + ' file' + (selectedFiles.length === 1 ? '' : 's') + ' selected';
+        selectedFilesEl.innerHTML = selectedFiles.map((file) => '<span class="inline-flex max-w-full items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[10px] text-ink"><span class="max-w-[190px] truncate font-medium">' + escapeHtml(file.name) + '</span><span class="shrink-0 text-[#999eaa]">' + formatBytes(file.size) + '</span></span>').join('');
+        submitButton.disabled = selectedFiles.length === 0 || submitting;
+        submitButton.querySelector('span').textContent = submitting ? 'Submitting…' : 'Start moderation';
+      }
+      function setHealth(ready, detail) {
+        const dotClass = ready ? 'h-1.5 w-1.5 rounded-full bg-[#79bd42]' : 'h-1.5 w-1.5 rounded-full bg-[#e0a63a]';
+        byId('health-dot').className = dotClass;
+        byId('side-health-dot').className = ready ? 'h-2 w-2 rounded-full bg-[#79bd42]' : 'h-2 w-2 rounded-full bg-[#e0a63a]';
+        byId('health-label').textContent = ready ? 'Service ready' : 'Service unavailable';
+        byId('side-health-label').textContent = ready ? 'Service is ready' : 'Service unavailable';
+        byId('health-badge').title = detail || '';
+      }
+      async function checkHealth() {
+        try {
+          const response = await fetch(endpoint('/health/ready'), { cache: 'no-store' });
+          setHealth(response.ok, response.ok ? 'Image Guard is ready.' : 'Health check returned HTTP ' + response.status);
+          return response.ok;
+        } catch (error) {
+          setHealth(false, error.message || 'Could not reach the Image Guard service.');
+          return false;
+        }
+      }
+      async function readError(response) {
+        try { const payload = await response.json(); return payload.error || ('HTTP ' + response.status); }
+        catch (_) { return 'HTTP ' + response.status; }
+      }
+      async function submitFile(file) {
+        const record = { clientId: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2), fileName: file.name, sizeBytes: file.size, createdAt: new Date().toISOString(), status: 'uploading' };
+        records.unshift(record);
+        try { previews.set(record.clientId, URL.createObjectURL(file)); } catch (_) {}
+        saveRecords(); render();
+        const form = new FormData();
+        form.append('image', file, file.name);
+        try {
+          const response = await fetch(endpoint('/v1/images'), { method: 'POST', body: form });
+          if (!response.ok) throw new Error(await readError(response));
+          const payload = await response.json();
+          record.imageId = payload.image_id;
+          record.status = payload.status || 'queued';
+          record.error = '';
+          saveRecords(); render();
+          watchRecord(record);
+        } catch (error) {
+          record.status = 'failed';
+          record.error = error.message || 'Upload failed';
+          saveRecords(); render();
+        }
+      }
+      async function watchRecord(record) {
+        if (!record.imageId || watching.has(record.clientId) || record.status === 'processed') return;
+        const connection = apiBase;
+        const token = {};
+        watching.set(record.clientId, token);
+        for (let attempt = 0; attempt < 120; attempt++) {
+          if (watching.get(record.clientId) !== token) return;
+          try {
+            const response = await fetch(connection.replace(/\/+$/, '') + '/v1/images/' + encodeURIComponent(record.imageId), { cache: 'no-store' });
+            if (watching.get(record.clientId) !== token) return;
+            if (response.status === 404) { record.status = 'unavailable'; record.error = 'Image ID was not found'; saveRecords(); render(); break; }
+            if (!response.ok) throw new Error(await readError(response));
+            const payload = await response.json();
+            if (watching.get(record.clientId) !== token) return;
+            record.status = payload.status || record.status;
+            if (payload.status === 'processed') {
+              record.outcome = payload.outcome;
+              record.moderationResult = payload.moderation_result;
+              record.error = payload.processing_error || '';
+              record.processedAt = payload.processed_at || null;
+              saveRecords(); render();
+              break;
+            }
+            record.error = '';
+            saveRecords(); render();
+          } catch (error) {
+            if (watching.get(record.clientId) !== token) return;
+            record.error = error.message || 'Could not refresh status';
+          }
+          await new Promise((resolve) => setTimeout(resolve, 2500));
+        }
+        if (watching.get(record.clientId) !== token) return;
+        watching.delete(record.clientId);
+        if (record.status !== 'processed' && record.status !== 'unavailable') {
+          record.status = 'unavailable';
+          if (!record.error) record.error = 'Status polling timed out';
+          saveRecords(); render();
+        }
+      }
+      function acceptFiles(files) {
+        const accepted = [];
+        const rejected = [];
+        Array.from(files).forEach((file) => {
+          const validType = ['image/jpeg', 'image/png'].includes(file.type) || /\.(jpe?g|png)$/i.test(file.name);
+          if (validType) accepted.push(file); else rejected.push(file.name);
+        });
+        selectedFiles = selectedFiles.concat(accepted);
+        renderSelection();
+        if (rejected.length) notify('Skipped unsupported file' + (rejected.length > 1 ? 's' : '') + ': ' + rejected.join(', '), 'error');
+        else if (accepted.length) byId('upload-message').classList.add('hidden');
+      }
+
+      dropZone.addEventListener('click', (event) => { if (!event.target.closest('button')) fileInput.click(); });
+      fileInput.addEventListener('change', () => { acceptFiles(fileInput.files); fileInput.value = ''; });
+      ['dragenter', 'dragover'].forEach((name) => dropZone.addEventListener(name, (event) => { event.preventDefault(); dropZone.classList.add('drop-active'); }));
+      ['dragleave', 'drop'].forEach((name) => dropZone.addEventListener(name, (event) => { event.preventDefault(); dropZone.classList.remove('drop-active'); }));
+      dropZone.addEventListener('drop', (event) => acceptFiles(event.dataTransfer.files));
+      byId('clear-selection').addEventListener('click', () => { selectedFiles = []; renderSelection(); byId('upload-message').classList.add('hidden'); });
+      byId('search-input').addEventListener('input', render);
+      submitButton.addEventListener('click', async () => {
+        if (submitting || selectedFiles.length === 0) return;
+        const batch = selectedFiles.slice();
+        selectedFiles = [];
+        submitting = true;
+        renderSelection();
+        byId('upload-message').classList.add('hidden');
+        for (const file of batch) await submitFile(file);
+        submitting = false;
+        renderSelection();
+        notify('Submitted ' + batch.length + ' image' + (batch.length === 1 ? '' : 's') + '. Processing status will update below.', 'success');
+      });
+      byId('settings-toggle').addEventListener('click', () => { byId('settings-panel').classList.toggle('hidden'); byId('api-base').value = apiBase; byId('settings-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
+      byId('settings-close').addEventListener('click', () => byId('settings-panel').classList.add('hidden'));
+      byId('save-api').addEventListener('click', async () => {
+        const value = byId('api-base').value.trim().replace(/\/+$/, '');
+        if (!value) { byId('api-base').focus(); return; }
+        apiBase = value;
+        try { localStorage.setItem(API_KEY, apiBase); } catch (_) {}
+        reconnectRecords();
+        await checkHealth();
+      });
+
+      render();
+      renderSelection();
+      checkHealth();
+      window.setInterval(checkHealth, 15000);
+      records.filter((item) => item.imageId).forEach((item) => watchRecord(item));
+    })();
+  </script>
+</body>
+</html>

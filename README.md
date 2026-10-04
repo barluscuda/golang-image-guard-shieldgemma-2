@@ -10,6 +10,8 @@ Use Go 1.25 or newer. Start a llama.cpp server separately with a ShieldGemma 2 c
 go run ./cmd/server
 ```
 
+Open `http://localhost:8080/` to use the moderation workspace.
+
 The service reads `config.yaml` and `policy.txt` from the current directory. Configuration values can be overridden with `IMAGE_GUARD_` environment variables. For example:
 
 ```sh
@@ -19,6 +21,16 @@ go run ./cmd/server
 ```
 
 SQLite creates `imageguard.db`; uploaded files are stored under `data/images`. Both paths can be changed in `config.yaml`.
+
+Enable debug logging to see the full model prompt (including the policy) and the model's output before decision parsing:
+
+```sh
+IMAGE_GUARD_LOGGING_LEVEL=debug go run ./cmd/server
+```
+
+These logs include the model name and image metadata; image data is omitted.
+
+Model requests and HTTP response status are logged at the default `info` level. The browser verifies saved verdicts against the API on reload and reconnect; cached results alone do not display an allowed decision.
 
 ## API
 

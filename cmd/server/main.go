@@ -64,7 +64,7 @@ func run() error {
 		return err
 	}
 	imageService := service.NewImageService(repo, fileStorage, policySnapshot.Text, policySnapshot.Hash, cfg.MaxImageBytes)
-	moderator := shieldgemma.New(cfg.ModelEndpoint, cfg.ModelName, cfg.ModelTimeout, cfg.MaxImageBytes)
+	moderator := shieldgemma.New(cfg.ModelEndpoint, cfg.ModelName, cfg.ModelTimeout, cfg.MaxImageBytes, logger)
 	moderationService := service.NewModerationService(repo, fileStorage, moderator, logger)
 	backgroundWorker := worker.New(moderationService, cfg.WorkerPollInterval, logger)
 	router := httpadapter.NewRouter(imageService, cfg.MaxImageBytes, logger)
