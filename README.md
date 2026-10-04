@@ -1,7 +1,6 @@
-🚨 PROJECT PAUSED 🚨
-⛔ THIS PROJECT IS NOT WORKING
-
 # Image Guard
+## 🚨 PROJECT PAUSED 🚨
+## ⛔ THIS PROJECT IS NOT WORKING
 
 Image Guard is a small Go alpha service that accepts images, queues moderation in SQLite, and checks each image with ShieldGemma through a llama.cpp server.
 
